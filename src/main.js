@@ -32,4 +32,10 @@ const app = createApp(App)
 app.config.globalProperties.$userData = {}
 app.use(router)
 
+
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
+app.use(Toast, { timeout: 2000 })
+
 app.mount('#app')

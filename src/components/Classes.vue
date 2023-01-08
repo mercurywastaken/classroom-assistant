@@ -42,60 +42,81 @@
                                     <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule-tab-pane" type="button" role="tab" aria-controls="schedule-tab-pane" aria-selected="false">Schedule</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance-tab-pane" type="button" role="tab" aria-controls="attendance-tab-pane" aria-selected="false">Attendance</button>
+                                    <button class="nav-link" id="participants-list-tab" data-bs-toggle="tab" data-bs-target="#participants-list-tab-pane" type="button" role="tab" aria-controls="participants-list-tab-pane" aria-selected="false">Participants</button>
                                 </li>
                             </ul>
                             <div class="tab-content overflow-auto" id="myTabContent">
-                            <div class="tab-pane fade show active py-3" id="resource-tab-pane" role="tabpanel" aria-labelledby="resource-tab" tabindex="0">
-                                <div v-for="resource in classResources" :key="resource.id" class="card p-3 mb-1">
-                                    <div class="d-flex">
-                                        <p class="mb-1 my-auto text-primary flex-grow-1"><i class="bi bi-file-earmark-fill me-1"></i>{{resource.name}}</p>
+                                <div class="tab-pane fade show active py-3" id="resource-tab-pane" role="tabpanel" aria-labelledby="resource-tab" tabindex="0">
+                                    <div v-for="resource in classResources" :key="resource.id" class="card p-3 mb-1">
+                                        <div class="d-flex">
+                                            <p class="mb-1 my-auto text-primary flex-grow-1"><i class="bi bi-file-earmark-fill me-1"></i>{{resource.name}}</p>
+                                            
+                                            <button v-if="userRole == 'teacher'" @click="deleteResource(resource.id)" class="btn btn-sm btn-light bg-white" type="button">
+                                                <i class="bi bi-trash-fill text-danger" style="cursor: pointer;"></i>
+                                            </button>
+                                        </div>
+                                        <small>{{resource.description}}</small>
                                         
-                                        <button v-if="userRole == 'teacher'" @click="deleteResource(resource.id)" class="btn btn-sm btn-light bg-white" type="button">
-                                            <i class="bi bi-trash-fill text-danger" style="cursor: pointer;"></i>
-                                        </button>
+                                            
+                                        <p>
+                                            <button @click="downloadResource(resource.file, resource.name)" class="btn btn-sm btn-light bg-white text-primary float-start mt-2">
+                                                <i class="bi bi-download"></i>&nbsp;&nbsp;Download
+                                            </button>
+                                        </p>
                                     </div>
-                                    <small>{{resource.description}}</small>
-                                    
-                                        
-                                    <p>
-                                        <button @click="downloadResource(resource.file, resource.name)" class="btn btn-sm btn-light bg-white text-primary float-start mt-2">
-                                            <i class="bi bi-download"></i>&nbsp;&nbsp;Download
-                                        </button>
-                                    </p>
-                                </div>
-                                <div v-if="classResources && classResources.length == 0" class="alert alert-secondary">
-                                    No resources yet.
-                                </div>
-                            </div>
-                            <div class="tab-pane fade py-3" id="schedule-tab-pane" role="tabpanel" aria-labelledby="schedule-tab" tabindex="0">
-                                <div>
-                                    <div class="card p-3 mb-1 alert alert-primary">
-                                        <p class="text-bold">Monday</p>
-                                        <small>0800-1000 - Tutorial</small>
-                                        <small>A1-21</small>
-                                    </div>
-                                    <div class="card p-3 mb-1 alert alert-secondary">
-                                        <p class="text-bold">Tuesday</p>
-                                        <small>None</small>
-                                    </div>
-                                    <div class="card p-3 mb-1 alert alert-warning">
-                                        <p class="text-bold">Wednesday</p>
-                                        <small>1200-1400 - Lecture</small>
-                                        <small>Lecture Hall 1</small>
-                                    </div>
-                                    <div class="card p-3 mb-1 alert alert-danger">
-                                        <p class="text-bold">Thursday</p>
-                                        <small>1600-1800 - Lab</small>
-                                        <small>A1-21</small>
-                                    </div>
-                                    <div class="card p-3 mb-1 alert alert-secondary">
-                                        <p class="text-bold">Friday</p>
-                                        <small>None</small>
+                                    <div v-if="classResources && classResources.length == 0" class="alert alert-secondary">
+                                        No resources yet.
                                     </div>
                                 </div>
-                            </div>
-                            <div class="tab-pane fade" id="attendance-tab-pane" role="tabpanel" aria-labelledby="attendance-tab" tabindex="0">...</div>
+                                <div class="tab-pane fade py-3" id="schedule-tab-pane" role="tabpanel" aria-labelledby="schedule-tab" tabindex="0">
+                                    <div v-if="classSchedule">
+                                        <div class="card p-3 mb-1 alert" :class="classSchedule.mon.time != '' ? setScheduleColor(classSchedule.mon.type) : 'alert-secondary'">
+                                            <p class="text-bold">Monday</p>
+                                            <small v-if="classSchedule.mon.time != ''">{{classSchedule.mon.time}} - {{classSchedule.mon.type}}</small>
+                                            <small v-if="classSchedule.mon.time != ''">{{classSchedule.mon.location}}</small>
+                                            <small v-if="classSchedule.mon.time == ''">None</small>
+                                        </div>
+                                        <div class="card p-3 mb-1 alert" :class="classSchedule.tue.time != '' ? setScheduleColor(classSchedule.tue.type) : 'alert-secondary'">
+                                            <p class="text-bold">Tuesday</p>
+                                            <small v-if="classSchedule.tue.time != ''">{{classSchedule.tue.time}} - {{classSchedule.tue.type}}</small>
+                                            <small v-if="classSchedule.tue.time != ''">{{classSchedule.tue.location}}</small>
+                                            <small v-if="classSchedule.tue.time == ''">None</small>
+                                        </div>
+                                        <div class="card p-3 mb-1 alert" :class="classSchedule.wed.time != '' ? setScheduleColor(classSchedule.wed.type) : 'alert-secondary'">
+                                            <p class="text-bold">Wednesday</p>
+                                            <small v-if="classSchedule.wed.time != ''">{{classSchedule.wed.time}} - {{classSchedule.wed.type}}</small>
+                                            <small v-if="classSchedule.wed.time != ''">{{classSchedule.wed.location}}</small>
+                                            <small v-if="classSchedule.wed.time == ''">None</small>
+                                        </div>
+                                        <div class="card p-3 mb-1 alert" :class="classSchedule.thu.time != '' ? setScheduleColor(classSchedule.thu.type) : 'alert-secondary'">
+                                            <p class="text-bold">Thursday</p>
+                                            <small v-if="classSchedule.thu.time != ''">{{classSchedule.thu.time}} - {{classSchedule.thu.type}}</small>
+                                            <small v-if="classSchedule.thu.time != ''">{{classSchedule.thu.location}}</small>
+                                            <small v-if="classSchedule.thu.time == ''">None</small>
+                                        </div>
+                                        <div class="card p-3 mb-1 alert" :class="classSchedule.fri.time != '' ? setScheduleColor(classSchedule.fri.type) : 'alert-secondary'">
+                                            <p class="text-bold">Friday</p>
+                                            <small v-if="classSchedule.fri.time != ''">{{classSchedule.fri.time}} - {{classSchedule.fri.type}}</small>
+                                            <small v-if="classSchedule.fri.time != ''">{{classSchedule.fri.location}}</small>
+                                            <small v-if="classSchedule.fri.time == ''">None</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade py-3" id="participants-list-tab-pane" role="tabpanel" aria-labelledby="participants-list-tab" tabindex="0">
+                                    <div class="row g-0">
+                                        <div v-for="student in classParticipants" :key="student.id" class="col-6 p-1">
+                                            <div class="card p-3">
+                                                <div class="d-flex">
+                                                    <div class="flex-grow-1 my-auto">{{student.data.name}}</div>
+                                                </div>
+                                            </div>
+                                                
+                                            <div v-if="classParticipants.length == 0" class="alert alert-secondary">
+                                                No students yet.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -118,14 +139,14 @@
             <div class="offcanvas-body text-start">
                 <form>
                     <div class="mb-3">
-                        <label for="inputFile" class="form-label">File</label>
+                        <label for="inputFile" class="form-label">File <span class="text-danger">*</span></label>
                         <input v-on:change="uploadToBucket($event)" class="form-control" type="file" id="inputFile">
                     </div>
                     <div class="progress mb-3" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="height: 3px">
                         <div id="uploadProgressBar" class="progress-bar" style="width: 0%"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="uploadFileName" class="form-label">File Name</label>
+                        <label for="uploadFileName" class="form-label">File Name <span class="text-danger">*</span></label>
                         <input v-model="uploadFileName" type="text" class="form-control" id="uploadFileName" aria-describedby="classNameHelp">
                         <!-- <div id="classNameHelp" class="form-text">We'll never share your email with anyone else.</div> -->
                     </div>
@@ -134,7 +155,7 @@
                         <textarea v-model="uploadFileDesc" class="form-control" id="uploadFileDescription" rows="6"></textarea>
                     </div>
                 </form>
-                <button class="btn btn-outline-secondary w-100" @click="createResource()" data-bs-dismiss="offcanvas" data-bs-target="#uploadFileOffcanvas" aria-label="Close">
+                <button class="btn btn-outline-secondary w-100" @click="createResource()" :disabled="disableResourceButton" data-bs-dismiss="offcanvas" data-bs-target="#uploadFileOffcanvas" aria-label="Close">
                     <p><i class="bi bi-pencil-fill me-2"></i>Upload File</p>
                 </button>
             </div>
@@ -147,17 +168,24 @@
 <script>
 import Navbar from './Navbar.vue'
 import { DataStore } from '@aws-amplify/datastore';
-import { Classes, Resources } from '../models';
+import { Classes, Resources, User } from '../models';
 import { Storage } from "@aws-amplify/storage"
+import { useToast } from "vue-toastification";
 
 export default {
     name: 'ClassesSection',
+    setup() {
+        const toast = useToast();
+        return { toast }
+    },
     data() {
       return {
         classData: {},
         selectedClass: {},
         selectedClassId: '',
         classResources: {},
+        classSchedule: null,
+        classParticipants: [],
         
         userRole: '',
         userId: '',
@@ -168,6 +196,8 @@ export default {
         uploadFileName: '',
         uploadFileDesc: '',
         uploadFileKey: '',
+
+        disableResourceButton: true,
       }  
     },
     components: {
@@ -202,20 +232,25 @@ export default {
                 })
             );
 
+            this.toast.success('Resource uploaded successfully.')
+
             this.queryResource();
             
             this.uploadFileName = ''
             this.uploadFileDesc = ''
             this.uploadFileKey = ''
+            this.disableResourceButton = true
             document.getElementById("inputFile").value = null
+            document.getElementById("uploadProgressBar").style.width = '0'
         },
 
         async deleteResource(id) {
             const modelToDelete = await DataStore.query(Resources, id);
             DataStore.delete(modelToDelete);
             this.queryResource();
-        },
 
+            this.toast.success('Resource deleted successfully.')
+        },
 
         async downloadResource(key, filename) {
             const result = await Storage.get(key, { download: true });
@@ -239,42 +274,51 @@ export default {
             return a;
         },
 
-        // usage
-        async download() {
-        },
-
-        async deleteClass(id) {
-            const modelToDelete = await DataStore.query(Classes, id);
-            DataStore.delete(modelToDelete);
-            this.queryClass();
-        },
-
         async uploadToBucket(e) {
             const file = e.target.files[0];
-            console.log(file)
             const filename = file.name.replace(/\s/g, '')
             this.uploadFileName = filename
             this.uploadFileKey = `${this.selectedClassId}/${filename}`
             try {
                 await Storage.put(this.uploadFileKey, file, {
                     progressCallback(progress) {
-                        console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
                         let x = progress.loaded/progress.total * 100
                         document.getElementById("uploadProgressBar").style.width = `${x}%`
                     },
+                }).then(() => {
+                    this.disableResourceButton = false
                 })
             } catch (error) {
                 console.log("Error uploading file: ", error);
+                this.toast.error('Error uploading file.')
             }
         },
 
         selectClass(item) {
+            this.classParticipants = []
             this.selectedClass = item.data;
             this.classResources = item.resource;
             this.selectedClassId = item.id
+            this.classSchedule = item.data.schedule
+            item.participants.forEach(async studentid => {
+                this.classParticipants.push(await DataStore.query(User, studentid))
+            })
+            console.log(this.classParticipants)
             
             this.queryResource();
-        }
+        },
+
+        setScheduleColor(type) {
+            let style = 'alert-primary'
+            if (type == "Lecture") {
+                style = 'alert-primary'
+            } else if (type == "Tutorial") {
+                style = 'alert-warning'
+            } else if (type == "Lab") {
+                style = 'alert-danger'
+            }
+            return style
+        },
     },
     beforeMount() {
         this.userId = localStorage.getItem("userId")

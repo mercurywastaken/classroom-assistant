@@ -14,28 +14,28 @@
             <div class="mb-3">
                 <a @click="toggleSignInUp()" class="btn btn-link" for="exampleCheck1">Don't have an account? Signup</a>
             </div>
-            <button @click="loginUser($event)" class="btn btn-primary">Login</button>
+            <button @click="loginUser($event)" class="btn btn-primary" :disabled="username == '' || password == ''">Login</button>
         </form>
     </div>
 
     <div v-show="isSignup && !isConfirm">
         <form>
             <div class="mb-3">
-                <label for="signupEmail" class="form-label">Email address</label>
+                <label for="signupEmail" class="form-label">Email address <span class="text-danger">*</span></label>
                 <input v-model="signupEmail" type="email" class="form-control" id="signupEmail" aria-describedby="emailHelp">
                 <div v-show="false" id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
             </div>
             <div class="mb-3">
-                <label for="signupName" class="form-label">Name</label>
+                <label for="signupName" class="form-label">Name <span class="text-danger">*</span></label>
                 <input v-model="signupName" type="email" class="form-control" id="signupName" aria-describedby="nameHelp">
                 <div v-show="false" id="nameHelp" class="form-text">We'll never share your email with anyone else.</div>
             </div>
             <div class="mb-3">
-                <label for="signupPassword" class="form-label">Password</label>
+                <label for="signupPassword" class="form-label">Password <span class="text-danger">*</span></label>
                 <input v-model="signupPassword" type="password" class="form-control" id="signupPassword">
             </div>
             <div class="mb-3">
-                <label for="signupConfirmPassword" class="form-label">Confirm Password</label>
+                <label for="signupConfirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
                 <input v-model="signupConfirmPassword" type="password" class="form-control" id="signupConfirmPassword">
             </div>
             <div class="mb-3 form-check">
@@ -47,7 +47,7 @@
             <div class="mb-3">
                 <a @click="toggleSignInUp()" class="btn btn-link" for="exampleCheck1">Already have an account? Login</a>
             </div>
-            <button @click="signupUser($event)" class="btn btn-primary">Signup</button>
+            <button @click="signupUser($event)" class="btn btn-primary" :disabled="signupEmail == '' || signupPassword == '' || signupConfirmPassword != signupPassword || signupName == ''">Signup</button>
         </form>
     </div>
 
@@ -84,9 +84,14 @@
 import { Auth, Hub } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
 import { User } from '../models';
+import { useToast } from "vue-toastification";
 
 export default {
     name: 'LoginPage',
+    setup() {
+        const toast = useToast();
+        return { toast }
+    },
     data() {
         return {
             userData: {},
@@ -101,8 +106,6 @@ export default {
             isTeacher: 'student',
 
             verificationCode: '',
-
-            error: '',
 
             isSignup: false,
             isConfirm: false,
@@ -126,6 +129,12 @@ export default {
                     this.$router.push({ name: 'classes'})
             } catch (error) {
                 console.log('error signing in', error);
+                if (error == 'NotAuthorizedException: Incorrect username or password.')
+                    this.toast.error('Incorrect username or password.')
+                else if (error == 'UserNotFoundException: User does not exist.')
+                    this.toast.error('User does not exist.')
+                else
+                    this.toast.error('An error occured while signing in.')
             }
         },
 
@@ -153,6 +162,12 @@ export default {
                 }
             } catch (error) {
                 console.log('error signing up:', error);
+                if (error.name.includes(`InvalidParameterException`))
+                    this.toast.error('Password should contain lowercase characters, numbers and 8 characters long.', { timeout: 4000 })
+                else if (error == 'UsernameExistsException: An account with the given email already exists.')
+                    this.toast.error('An account with the given email already exists.')
+                else
+                    this.toast.error('An error occured while signing up.')
             }
         },
 
@@ -190,22 +205,28 @@ export default {
         },
 
         listenToAutoSignInEvent() {
-            Hub.listen('auth', async ({ payload }) => {
-                const { event } = payload;
-                if (event === 'autoSignIn') {
-                    const user = payload.data;
-                    console.log('wee', user)
-                    localStorage.setItem("userData", JSON.stringify(user.attributes));
-                    this.$userData = user
-                    console.log('ree', JSON.parse(localStorage.getItem("userData")))
-                    await this.queryUser(this.signupEmail)
-                    if (typeof user !== 'string')
-                        this.$router.push({ name: 'classes'})
-                } else if (event === 'autoSignIn_failure') {
-                    this.isSignup = false
-                    this.isConfirm = false
-                }
-            })
+            try {
+                Hub.listen('auth', async ({ payload }) => {
+                    const { event } = payload;
+                    if (event === 'autoSignIn') {
+                        const user = payload.data;
+                        console.log('wee', user)
+                        localStorage.setItem("userData", JSON.stringify(user.attributes));
+                        this.$userData = user
+                        console.log('ree', JSON.parse(localStorage.getItem("userData")))
+                        await this.queryUser(this.signupEmail)
+                        if (typeof user !== 'string')
+                            this.$router.push({ name: 'classes'})
+                        else 
+                            alert(user)
+                    } else if (event === 'autoSignIn_failure') {
+                        this.isSignup = false
+                        this.isConfirm = false
+                    }
+                })
+            } catch (error) {
+                this.toast.error('An error occured while signing in.')
+            }
         },
 
         async confirmSignUp(e) {

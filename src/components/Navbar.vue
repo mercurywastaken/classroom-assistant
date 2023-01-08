@@ -26,7 +26,7 @@
                                 <button class="nav-link active" id="classes-tab" data-bs-toggle="tab" data-bs-target="#classes-tab-pane" type="button" role="tab" aria-controls="classes-tab-pane" aria-selected="true">Classes</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule-tab-pane" type="button" role="tab" aria-controls="schedule-tab-pane" aria-selected="false">Schedule</button>
+                                <button class="nav-link" id="set-schedule-tab" data-bs-toggle="tab" data-bs-target="#set-schedule-tab-pane" type="button" role="tab" aria-controls="set-schedule-tab-pane" aria-selected="false">Schedule</button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="students-tab" data-bs-toggle="tab" data-bs-target="#students-tab-pane" type="button" role="tab" aria-controls="students-tab-pane" aria-selected="false">Students</button>
@@ -40,13 +40,13 @@
                                     <h5 class="mb-3 text-primary">Create Class</h5>
                                     <form>
                                       <div class="mb-3">
-                                        <label for="inputClassName" class="form-label">Class Name</label>
-                                        <input v-model="className" type="email" class="form-control" id="inputClassName" aria-describedby="classNameHelp">
+                                        <label for="inputClassName" class="form-label">Class Name <span class="text-danger">*</span></label>
+                                        <input v-model="className" v-on:change="validateAddClass()" type="email" class="form-control" id="inputClassName" aria-describedby="classNameHelp">
                                         <!-- <div id="classNameHelp" class="form-text">We'll never share your email with anyone else.</div> -->
                                       </div>
                                       <div class="mb-3">
-                                        <label for="inputClassCode" class="form-label">Class Code</label>
-                                        <input v-model="classCode" type="email" class="form-control" id="inputClassCode" aria-describedby="classCodeHelp">
+                                        <label for="inputClassCode" class="form-label">Class Code <span class="text-danger">*</span></label>
+                                        <input v-model="classCode" v-on:change="validateAddClass()" type="email" class="form-control" id="inputClassCode" aria-describedby="classCodeHelp">
                                         <!-- <div id="classCodeHelp" class="form-text">We'll never share your email with anyone else.</div> -->
                                       </div>
                                       <div class="mb-3">
@@ -54,7 +54,7 @@
                                         <textarea v-model="classDesc" class="form-control" id="inputClassDescription" rows="3"></textarea>
                                       </div>
                                     </form>
-                                    <button class="btn btn-outline-secondary w-100" @click="createClass()">
+                                    <button class="btn btn-outline-secondary w-100" @click="createClass()" :disabled="disableAddClass">
                                         <p><i class="bi bi-plus-circle me-2"></i>Create Class</p>
                                     </button>
                                   </div>
@@ -95,7 +95,7 @@
                               </div>
                           </div>
 
-                          <div class="tab-pane fade py-3" id="schedule-tab-pane" role="tabpanel" aria-labelledby="schedule-tab" tabindex="0">
+                          <div class="tab-pane fade py-3" id="set-schedule-tab-pane" role="tabpanel" aria-labelledby="set-schedule-tab" tabindex="0">
                             <div class="row">
                                 <div class="col-6 text-start">
                                   <div class="card p-3">
@@ -117,36 +117,108 @@
 
                                 <div v-show="isSettingSchedule" class="col-6 text-start">
                                   <div class="card p-3">
-                                    <h5 class="mb-3 text-primary">Select Participant(s) for {{selectedClassNameParticipants}}</h5>
+                                    <h5 class="mb-3 text-primary">Setting Schedule for {{selectedClassNameSchedule}}</h5>
                                     <!-- <Class v-for="item in classData" :key="item.id" :classData="item.data" data-bs-toggle="modal" data-bs-target="#exampleModal"/> -->
                                     <form>
                                       <div class="mb-3">
                                         <label for="sceduleMonday" class="form-label">Monday</label>
-                                        <input v-model="monday" type="text" class="form-control" id="sceduleMonday">
+                                        <div class="row g-3 align-items-center">
+                                          <div class="col-auto">
+                                            <input v-model="mondayTime" placeholder="Time" type="text" id="mondayTime" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <input v-model="mondayLocation" placeholder="Location" type="text" id="mondayLocation" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <select v-model="mondayType" class="form-select" id="mondayType">
+                                              <option value="Lecture">Lecture</option>
+                                              <option value="Tutorial">Tutorial</option>
+                                              <option value="Lab">Lab</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                        <!-- <input v-model="monday" type="text" class="form-control" id="sceduleMonday"> -->
                                       </div>
                                       <div class="mb-3">
                                         <label for="sceduleTuesday" class="form-label">Tuesday</label>
-                                        <input v-model="tuesday" type="text" class="form-control" id="sceduleTuesday">
+                                        <div class="row g-3 align-items-center">
+                                          <div class="col-auto">
+                                            <input v-model="tuesdayTime" placeholder="Time" type="text" id="tuesdayTime" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <input v-model="tuesdayLocation" placeholder="Location" type="text" id="tuesdayLocation" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <select v-model="tuesdayType" class="form-select" id="tuesdayType">
+                                              <option value="Lecture">Lecture</option>
+                                              <option value="Tutorial">Tutorial</option>
+                                              <option value="Lab">Lab</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                        <!-- <input v-model="tuesday" type="text" class="form-control" id="sceduleTuesday"> -->
                                       </div>
                                       <div class="mb-3">
                                         <label for="sceduleWednesday" class="form-label">Wednesday</label>
-                                        <input v-model="wednesday" type="text" class="form-control" id="sceduleWednesday">
+                                        <div class="row g-3 align-items-center">
+                                          <div class="col-auto">
+                                            <input v-model="wednesdayTime" placeholder="Time" type="text" id="wednesdayTime" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <input v-model="wednesdayLocation" placeholder="Location" type="text" id="wednesdayLocation" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <select v-model="wednesdayType" class="form-select" id="wednesdayType">
+                                              <option value="Lecture">Lecture</option>
+                                              <option value="Tutorial">Tutorial</option>
+                                              <option value="Lab">Lab</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                        <!-- <input v-model="wednesday" type="text" class="form-control" id="sceduleWednesday"> -->
                                       </div>
                                       <div class="mb-3">
                                         <label for="sceduleThursday" class="form-label">Thursday</label>
-                                        <input v-model="thursday" type="text" class="form-control" id="sceduleThursday">
+                                        <div class="row g-3 align-items-center">
+                                          <div class="col-auto">
+                                            <input v-model="thursdayTime" placeholder="Time" type="text" id="thursdayTime" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <input v-model="thursdayLocation" placeholder="Location" type="text" id="thursdayLocation" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <select v-model="thursdayType" class="form-select" id="thursdayType">
+                                              <option value="Lecture">Lecture</option>
+                                              <option value="Tutorial">Tutorial</option>
+                                              <option value="Lab">Lab</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                        <!-- <input v-model="thursday" type="text" class="form-control" id="sceduleThursday"> -->
                                       </div>
                                       <div class="mb-3">
                                         <label for="sceduleFriday" class="form-label">Friday</label>
-                                        <input v-model="friday" type="text" class="form-control" id="sceduleFriday">
+                                        <div class="row g-3 align-items-center">
+                                          <div class="col-auto">
+                                            <input v-model="fridayTime" placeholder="Time" type="text" id="fridayTime" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <input v-model="fridayLocation" placeholder="Location" type="text" id="fridayLocation" class="form-control">
+                                          </div>
+                                          <div class="col-auto">
+                                            <select v-model="fridayType" class="form-select" id="fridayType">
+                                              <option value="Lecture">Lecture</option>
+                                              <option value="Tutorial">Tutorial</option>
+                                              <option value="Lab">Lab</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                        <!-- <input v-model="friday" type="text" class="form-control" id="sceduleFriday"> -->
                                       </div>
                                     </form>
-                                    <button class="btn btn-outline-secondary w-100" @click="createClass()">
-                                        <p><i class="bi bi-plus-circle me-2"></i>Create Class</p>
-                                    </button>
                                         
-                                    <button v-if="studentList.length > 0" class="btn btn-outline-secondary w-100 mt-2" @click="assignParticipants()">
-                                        <p><i class="bi bi-person-plus-fill me-2"></i>Assign Participants</p>
+                                    <button class="btn btn-outline-secondary w-100 mt-2" @click="setSchedule()">
+                                        <p><i class="bi bi-calendar-check me-2"></i>Save Schedule</p>
                                     </button>
                                   </div> 
                                 </div>
@@ -243,8 +315,14 @@ import { Auth } from 'aws-amplify';
 import { DataStore } from '@aws-amplify/datastore';
 import { Classes } from '../models';
 import { User } from '../models';
+import { useToast } from "vue-toastification";
+
 export default {
     name: 'NavbarAuth',
+    setup() {
+        const toast = useToast();
+        return { toast }
+    },
     components: {
       // Class
     },
@@ -273,6 +351,34 @@ export default {
         isSettingSchedule: false,
         selectedClassNameSchedule: '',
         scheduleList: {},
+
+        mondayTime: '',
+        mondayLocation: '',
+        mondayType: 'Lecture',
+
+        tuesdayTime: '',
+        tuesdayLocation: '',
+        tuesdayType: 'Lecture',
+
+        wednesdayTime: '',
+        wednesdayLocation: '',
+        wednesdayType: 'Lecture',
+
+        thursdayTime: '',
+        thursdayLocation: '',
+        thursdayType: 'Lecture',
+
+        fridayTime: '',
+        fridayLocation: '',
+        fridayType: 'Lecture',
+
+        disableAddClass: true,
+
+        // monday: {time: '', location: '', type: 'lecture'},
+        // tuesday: {'time': '', 'location': '', 'type': 'lecture'},
+        // wednesday: {'time': '', 'location': '', 'type': 'lecture'},
+        // thursday: {'time': '', 'location': '', 'type': 'lecture'},
+        // friday: {'time': '', 'location': '', 'type': 'lecture'},
       }
     },
     methods: {
@@ -291,16 +397,19 @@ export default {
                         'createdBy': this.userName,
                         'description': this.classDesc,
                         'schedule': {
-                          'mon': 'none',
-                          'tue': 'none',
-                          'wed': 'none',
-                          'thu': 'none',
-                          'fri': 'none',
+                          'mon': {'time': '', 'location': '', 'type': 'Lecture'},
+                          'tue': {'time': '', 'location': '', 'type': 'Lecture'},
+                          'wed': {'time': '', 'location': '', 'type': 'Lecture'},
+                          'thu': {'time': '', 'location': '', 'type': 'Lecture'},
+                          'fri': {'time': '', 'location': '', 'type': 'Lecture'},
                         }
                     },
                     "participants": []
                 })
             );
+
+            
+            this.toast.success('Class created successfully.')
 
             this.queryClass();
             this.$emit('queryClass')
@@ -327,6 +436,8 @@ export default {
                 'description': this.editClassDesc
               }
           }));
+
+          this.toast.success('Class edited successfully.')
           
           this.queryClass();
           this.$emit('queryClass')
@@ -335,6 +446,9 @@ export default {
         async deleteClass(id) {
             const modelToDelete = await DataStore.query(Classes, id);
             DataStore.delete(modelToDelete);
+            
+            this.toast.success('Class deleted successfully.')
+
             this.queryClass();
             this.$emit('queryClass')
         },
@@ -345,6 +459,7 @@ export default {
               this.$router.push({ name: 'login'})
           } catch (error) {
               console.log('error signing out: ', error);
+              this.toast.error('Error signing out.')
           }
         },
 
@@ -354,6 +469,47 @@ export default {
           this.selectedClassNameParticipants = classname
           this.participantList = participants
           this.queryStudent()
+        },
+
+        showSetSchedule(classid, schedule, classname) {
+          console.log(schedule)
+
+          if (!schedule) {
+            schedule = {
+              'mon': {'time': '', 'location': '', 'type': 'Lecture'},
+              'tue': {'time': '', 'location': '', 'type': 'Lecture'},
+              'wed': {'time': '', 'location': '', 'type': 'Lecture'},
+              'thu': {'time': '', 'location': '', 'type': 'Lecture'},
+              'fri': {'time': '', 'location': '', 'type': 'Lecture'},
+            }
+          }
+
+          this.isSettingSchedule = true
+          this.editClassId = classid
+
+          this.mondayTime = schedule.mon.time
+          this.mondayLocation = schedule.mon.location
+          this.mondayType = schedule.mon.type
+
+          this.tuesdayTime = schedule.tue.time
+          this.tuesdayLocation = schedule.tue.location
+          this.tuesdayType = schedule.tue.type
+
+          this.wednesdayTime = schedule.wed.time
+          this.wednesdayLocation = schedule.wed.location
+          this.wednesdayType = schedule.wed.type
+
+          this.thursdayTime = schedule.thu.time
+          this.thursdayLocation = schedule.thu.location
+          this.thursdayType = schedule.thu.type
+
+          this.fridayTime = schedule.fri.time
+          this.fridayLocation = schedule.fri.location
+          this.fridayType = schedule.fri.type
+
+          this.selectedClassNameSchedule = classname
+
+          this.queryClass();
         },
         
         async queryStudent() {
@@ -374,8 +530,54 @@ export default {
                 item.participants.push(obj)
               })
           }));
+          this.toast.success('Participants assigned successfully.')
           await this.queryClass();
-        },        
+          this.$emit('queryClass')
+        },       
+
+        async setSchedule() {
+          console.log('participantList', this.participantList)
+          console.log(this.editClassId)
+          const scheduleData = {
+            'mon': {
+              'time': this.mondayTime,
+              'location': this.mondayLocation,
+              'type': this.mondayType,
+            },
+            'tue': {
+              'time': this.tuesdayTime,
+              'location': this.tuesdayLocation,
+              'type': this.tuesdayType,
+            },
+            'wed': {
+              'time': this.wednesdayTime,
+              'location': this.wednesdayLocation,
+              'type': this.wednesdayType,
+            },
+            'thu': {
+              'time': this.thursdayTime,
+              'location': this.thursdayLocation,
+              'type': this.thursdayType,
+            },
+            'fri': {
+              'time': this.fridayTime,
+              'location': this.fridayLocation,
+              'type': this.fridayType,
+            },
+          }
+          const original = await DataStore.query(Classes, this.editClassId)
+          console.log(scheduleData)
+          await DataStore.save(Classes.copyOf(original, item => {
+              item.data.schedule = scheduleData
+          }));
+          this.toast.success('Schedule set successfully.')
+          await this.queryClass();
+          this.$emit('queryClass')
+        }, 
+
+        validateAddClass() {
+          this.disableAddClass = (this.className == '' || this.classCode == '')
+        }
     },
     async mounted() {
         if (JSON.parse(localStorage.getItem("userData")).userAttributes)
