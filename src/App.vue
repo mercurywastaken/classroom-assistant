@@ -1,15 +1,33 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container">
+    <!-- <Login @authenticated="checkIsLoggedIn" v-if="!this.isLoggedIn"/>
+    <Classes v-if="this.isLoggedIn" />
+    <button @click="toggle()" class="btn">
+      Toggle
+    </button> -->
+    <router-view/>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import Login from './components/Login.vue'
+// import Classes from './components/Classes.vue'
 
 export default {
   name: 'App',
+  data() {
+    return {
+      userData: null
+    }
+  },
   components: {
-    HelloWorld
+    // Login,
+    // Classes
+  },
+  methods: {
+    checkIsLoggedIn(data) {
+      this.userData = data
+    },
   }
 }
 </script>

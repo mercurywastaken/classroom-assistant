@@ -1,0 +1,6 @@
+{
+  "AppSyncApiName": "ClassroomAssistant",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthModeLastUpdated": "2023-01-06T18:44:47.555Z"
+}

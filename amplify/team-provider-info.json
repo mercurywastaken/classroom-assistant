@@ -1,0 +1,23 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-classroomassistant-staging-93510-authRole",
+      "UnauthRoleArn": "arn:aws:iam::396155967406:role/amplify-classroomassistant-staging-93510-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::396155967406:role/amplify-classroomassistant-staging-93510-authRole",
+      "Region": "ap-northeast-1",
+      "DeploymentBucketName": "amplify-classroomassistant-staging-93510-deployment",
+      "UnauthRoleName": "amplify-classroomassistant-staging-93510-unauthRole",
+      "StackName": "amplify-classroomassistant-staging-93510",
+      "StackId": "arn:aws:cloudformation:ap-northeast-1:396155967406:stack/amplify-classroomassistant-staging-93510/eb12ba60-8b49-11ed-a00d-0e6181197d7b",
+      "AmplifyAppId": "d67u98njfm15p"
+    },
+    "categories": {
+      "auth": {
+        "ClassroomAssistant": {}
+      },
+      "storage": {
+        "s3classroomassistantstorage": {}
+      }
+    }
+  }
+}

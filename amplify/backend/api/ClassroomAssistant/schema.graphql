@@ -1,0 +1,23 @@
+type Resources @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  description: String
+  file: String
+  classid: ID! @index(name: "byClasses")
+}
+
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  role: String!
+  Participant: [Classes] @hasMany(indexName: "byUser", fields: ["id"])
+  data: AWSJSON
+}
+
+type Classes @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  userid: ID! @index(name: "byUser")
+  data: AWSJSON!
+  Resources: [Resources] @hasMany(indexName: "byClasses", fields: ["id"])
+  participants: [String]!
+}
+ 

@@ -1,0 +1,12 @@
+{
+  "resourceName": "s3classroomassistantstorage",
+  "bucketName": "classroom-assistant-storage",
+  "policyUUID": "c1e87c47",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ]
+}
