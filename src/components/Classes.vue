@@ -110,10 +110,10 @@
                                                     <div class="flex-grow-1 my-auto">{{student.data.name}}</div>
                                                 </div>
                                             </div>
+                                        </div>
                                                 
-                                            <div v-if="classParticipants.length == 0" class="alert alert-secondary">
-                                                No students yet.
-                                            </div>
+                                        <div v-if="classParticipants.length == 0" class="alert alert-secondary">
+                                            No students yet.
                                         </div>
                                     </div>
                                 </div>
@@ -303,20 +303,20 @@ export default {
             item.participants.forEach(async studentid => {
                 this.classParticipants.push(await DataStore.query(User, studentid))
             })
-            console.log(this.classParticipants)
+            console.log(this.classParticipants, this.classParticipants.length)
             
             this.queryResource();
         },
 
         setScheduleColor(type) {
-            let style = 'alert-primary'
+            let style = ''
             if (type == "Lecture") {
                 style = 'alert-primary'
             } else if (type == "Tutorial") {
                 style = 'alert-warning'
             } else if (type == "Lab") {
                 style = 'alert-danger'
-            }
+            } 
             return style
         },
     },
