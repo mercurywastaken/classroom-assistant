@@ -64,7 +64,7 @@
                                         </button>
                                     </p>
                                 </div>
-                                <div v-if="classResources.length == 0" class="alert alert-secondary">
+                                <div v-if="classResources && classResources.length == 0" class="alert alert-secondary">
                                     No resources yet.
                                 </div>
                             </div>

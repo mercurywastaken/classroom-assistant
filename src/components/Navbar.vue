@@ -99,10 +99,10 @@
                             <div class="row">
                                 <div class="col-6 text-start">
                                   <div class="card p-3">
-                                    <h5 class="mb-3 text-primary">Assign Participants</h5>
+                                    <h5 class="mb-3 text-primary">Set Schedule</h5>
                                     <!-- <Class v-for="item in classData" :key="item.id" :classData="item.data" data-bs-toggle="modal" data-bs-target="#exampleModal"/> -->
                                     <div>
-                                        <div @click="showAssignParticipant(item.id, item.participants, item.data.name)" v-for="item in classData" :key="item.id" class="card p-3 mb-1" style="cursor: pointer">
+                                        <div @click="showSetSchedule(item.id, item.data.schedule, item.data.name)" v-for="item in classData" :key="item.id" class="card p-3 mb-1" style="cursor: pointer">
                                           <div class="d-flex">
                                             <div class="flex-grow-1 my-auto">{{item.data.name}} <small>({{item.data.code}})</small></div>
                                           </div>
@@ -115,22 +115,35 @@
                                   </div> 
                                 </div>
 
-                                <div v-show="isAssigningParticipant" class="col-6 text-start">
+                                <div v-show="isSettingSchedule" class="col-6 text-start">
                                   <div class="card p-3">
                                     <h5 class="mb-3 text-primary">Select Participant(s) for {{selectedClassNameParticipants}}</h5>
                                     <!-- <Class v-for="item in classData" :key="item.id" :classData="item.data" data-bs-toggle="modal" data-bs-target="#exampleModal"/> -->
-                                    <div>
-                                        <div v-for="student in studentList" :key="student.id" class="card p-3 mb-1" style="cursor: pointer">
-                                          <div class="d-flex">
-                                            <input v-model="participantList" :value="student.id" class="form-check-input my-auto me-2" type="checkbox">
-                                            <div class="flex-grow-1 my-auto">{{student.data.name}}</div>
-                                          </div>
-                                        </div>
-                                        
-                                        <div v-if="studentList.length == 0" class="alert alert-secondary">
-                                            No students yet.
-                                        </div>
-                                    </div>
+                                    <form>
+                                      <div class="mb-3">
+                                        <label for="sceduleMonday" class="form-label">Monday</label>
+                                        <input v-model="monday" type="text" class="form-control" id="sceduleMonday">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="sceduleTuesday" class="form-label">Tuesday</label>
+                                        <input v-model="tuesday" type="text" class="form-control" id="sceduleTuesday">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="sceduleWednesday" class="form-label">Wednesday</label>
+                                        <input v-model="wednesday" type="text" class="form-control" id="sceduleWednesday">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="sceduleThursday" class="form-label">Thursday</label>
+                                        <input v-model="thursday" type="text" class="form-control" id="sceduleThursday">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="sceduleFriday" class="form-label">Friday</label>
+                                        <input v-model="friday" type="text" class="form-control" id="sceduleFriday">
+                                      </div>
+                                    </form>
+                                    <button class="btn btn-outline-secondary w-100" @click="createClass()">
+                                        <p><i class="bi bi-plus-circle me-2"></i>Create Class</p>
+                                    </button>
                                         
                                     <button v-if="studentList.length > 0" class="btn btn-outline-secondary w-100 mt-2" @click="assignParticipants()">
                                         <p><i class="bi bi-person-plus-fill me-2"></i>Assign Participants</p>
@@ -255,7 +268,11 @@ export default {
         isAssigningParticipant: false,
         selectedClassNameParticipants: '',
         studentList: {},
-        participantList: []
+        participantList: [],
+
+        isSettingSchedule: false,
+        selectedClassNameSchedule: '',
+        scheduleList: {},
       }
     },
     methods: {
