@@ -18,7 +18,7 @@ export type AmplifyDependentResourcesAttributes = {
         }
     },
     "storage": {
-        "s3classroomassistantstorage": {
+        "s3classroomassistantstoragec456d98c": {
             "BucketName": "string",
             "Region": "string"
         }

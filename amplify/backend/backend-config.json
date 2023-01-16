@@ -55,7 +55,7 @@
     }
   },
   "storage": {
-    "s3classroomassistantstorage": {
+    "s3classroomassistantstoragec456d98c": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"

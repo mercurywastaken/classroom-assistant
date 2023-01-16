@@ -428,7 +428,6 @@ export default {
 
         async editClass() {
           const original = await DataStore.query(Classes, this.editClassId)
-          console.log(original)
           await DataStore.save(Classes.copyOf(original, item => {
               item.data = {
                 'name': this.editClassName,

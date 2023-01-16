@@ -16,7 +16,24 @@
         "ClassroomAssistant": {}
       },
       "storage": {
-        "s3classroomassistantstorage": {}
+        "s3classroomassistantstorage": {},
+        "classroomassistant69df7a37": {
+          "bucketName": "classroom-assistant-storage93510-staging",
+          "region": "ap-northeast-1"
+        },
+        "classroomassistant813394fe": {
+          "bucketName": "classroom-assistant-storage93510-staging",
+          "region": "ap-northeast-1"
+        },
+        "classroomassistant1ce903b7": {
+          "bucketName": "classroom-assistant-storage93510-staging",
+          "region": "ap-northeast-1"
+        },
+        "classroomassistant728f3817": {
+          "bucketName": "amplify-classroomassistant-staging-93510-deployment",
+          "region": "ap-northeast-1"
+        },
+        "s3classroomassistantstoragec456d98c": {}
       }
     }
   }
